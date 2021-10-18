@@ -9,7 +9,6 @@ async function main(){
     //load data
     const url = "airports.json";
     data = await loadData(url);
-    console.log(data);
 
     //placeholder
     let margin = {top: 20, right: 10, bottom: 20, left: 45};
@@ -31,7 +30,14 @@ async function main(){
                     .range([10, 18])
 
     //create force simulation
-    let simulation = d3.forceSimulation
+    let simulation = d3.forceSimulation(data.nodes)
+                        .force("link", d3.forceLink()
+                                        .id(d => d.id)
+                                        .links(data.links)
+                                )
+                        .force("charge", d3.forceManyBody())
+                        .force("X", d3.forceX(d => d.longitude))
+                        .force("Y", d3.forceY(d => d.latitude));
 }
 
 main();
