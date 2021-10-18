@@ -19,7 +19,8 @@ async function main(){
                     .attr('width', width + margin.left + margin.right)
                     .attr('height', height + margin.top + margin.bottom)
                     .append("g")
-                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+                    .on("end", ticked);
 
     //scale for size
     let pop = []
@@ -38,6 +39,34 @@ async function main(){
                         .force("charge", d3.forceManyBody())
                         .force("X", d3.forceX(d => d.longitude))
                         .force("Y", d3.forceY(d => d.latitude));
+
+    //nodes and links
+    let link = svg.selectAll("line")
+                    .data(data.links)
+                    .enter()
+                    .append("line")
+                    .style("stroke", "#aaa");
+
+    let node = svg.selectAll("circle")
+                    .data(data.nodes)
+                    .enter()
+                    .append("circle")
+                    .attr("r", function(d){
+                        return popScale(d.passengers)
+                    })
+                    .style("fill", "#69b3a2");
+
+    function ticked(){
+        link
+            .attr("x1", function(d) { return d.source.longitude; })
+            .attr("y1", function(d) { return d.source.latitude; })
+            .attr("x2", function(d) { return d.target.longitude; })
+            .attr("y2", function(d) { return d.target.latitude; });
+
+        node   
+            .attr("cx", function (d) { return d.longitude; })
+            .attr("cy", function(d) { return d.latitude; });
+    }
 }
 
 main();
